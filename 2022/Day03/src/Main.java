@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,13 +9,27 @@ public class Main {
             BufferedReader reader = new BufferedReader(new FileReader("2022/Day03/input.txt"));
             String line;
             int sumOfPriorities = 0;
+            List<List<Character>> ruckSacksOfGroup = new ArrayList<>();
+            int groupCounter = 0;
 
             while ((line = reader.readLine()) != null) {
                 if (!line.isBlank()) {
+                    /* Part One
                     List<Character> compartmentOne = convertStringToCharList(line.substring(0, line.length() / 2));
                     List<Character> compartmentTwo = convertStringToCharList(line.substring(line.length() / 2));
                     Character commonChar = getCommonCharOfLists(new ArrayList<>(Arrays.asList(compartmentOne, compartmentTwo)));
                     sumOfPriorities += getPriorityOfChar(commonChar);
+                    */
+
+                    ruckSacksOfGroup.add(convertStringToCharList(line));
+                    groupCounter++;
+
+                    if (groupCounter == 3) {
+                        Character commonChar = getCommonCharOfLists(ruckSacksOfGroup);
+                        sumOfPriorities += getPriorityOfChar(commonChar);
+                        ruckSacksOfGroup.clear();
+                        groupCounter = 0;
+                    }
                 }
             }
             reader.close();
