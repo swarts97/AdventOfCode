@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,7 @@ public class Main {
                 if (!line.isBlank()) {
                     List<Character> compartmentOne = convertStringToCharList(line.substring(0, line.length() / 2));
                     List<Character> compartmentTwo = convertStringToCharList(line.substring(line.length() / 2));
-                    Character commonChar = getCommonCharOfLists(compartmentOne, compartmentTwo);
+                    Character commonChar = getCommonCharOfLists(new ArrayList<>(Arrays.asList(compartmentOne, compartmentTwo)));
                     sumOfPriorities += getPriorityOfChar(commonChar);
                 }
             }
@@ -31,12 +33,12 @@ public class Main {
                 .collect(Collectors.toList());
     }
 
-    private static Character getCommonCharOfLists(List<Character> compartmentOne, List<Character> compartmentTwo) {
-        return compartmentOne
-                .stream()
-                .filter(compartmentTwo::contains)
-                .findFirst()
-                .get();
+    private static Character getCommonCharOfLists(List<List<Character>> compartments) {
+        List<Character> remainingCharacters = compartments.get(0);
+        for (int i = 1; i < compartments.size(); i++) {
+            remainingCharacters.retainAll(compartments.get(i));
+        }
+        return remainingCharacters.get(0);
     }
 
     private static int getPriorityOfChar(Character c) {
