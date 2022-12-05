@@ -32,12 +32,11 @@ public class Main {
     }
 
     private static Character getCommonCharOfLists(List<Character> compartmentOne, List<Character> compartmentTwo) {
-        Character commonChar = compartmentOne
+        return compartmentOne
                 .stream()
                 .filter(compartmentTwo::contains)
                 .findFirst()
                 .get();
-        return commonChar;
     }
 
     private static int getPriorityOfChar(Character c) {
