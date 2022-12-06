@@ -21,8 +21,9 @@ public class Main {
 
     private static int getMarkerPosition(String line) {
         char[] chars = line.toCharArray();
-        for (int i = 3; i < chars.length; i++) {
-            String lastNLetterString = getLastNLetterString(chars, i, 4);
+        int distinctCharactersLength = 4;
+        for (int i = distinctCharactersLength - 1; i < chars.length; i++) {
+            String lastNLetterString = getLastNLetterString(chars, i, distinctCharactersLength);
             if (allCharactersAreDifferent(lastNLetterString)) {
                 return i + 1;
             }
