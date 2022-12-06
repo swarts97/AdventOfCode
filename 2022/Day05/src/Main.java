@@ -17,7 +17,7 @@ public class Main {
 
             while ((command = reader.readLine()) != null) {
                 if (!command.isBlank()) {
-                    executeCommand(command, stacks);
+                    executeCommand(command, stacks, 9001);
                 }
             }
             reader.close();
@@ -47,15 +47,32 @@ public class Main {
         }
     }
 
-    private static void executeCommand(String command, List<Stack<Character>> stacks) {
+    private static void executeCommand(String command, List<Stack<Character>> stacks, int craneVersionNumber) {
         List<Integer> commandParameters = extractIntegersFromCommand(command);
         int numberOfCrates = commandParameters.get(0);
         int from = commandParameters.get(1);
         int to = commandParameters.get(2);
 
-        for (int i = 0; i < numberOfCrates; i++) {
-            Character crateToMove = stacks.get(from - 1).pop();
-            stacks.get(to - 1).push(crateToMove);
+        //Part one
+        if (craneVersionNumber == 9000) {
+            for (int i = 0; i < numberOfCrates; i++) {
+                Character crateToMove = stacks.get(from - 1).pop();
+                stacks.get(to - 1).push(crateToMove);
+            }
+        }
+
+        //Part two
+        if (craneVersionNumber == 9001) {
+            Stack<Character> helperStack = new Stack<>();
+            for (int i = 0; i < numberOfCrates; i++) {
+                Character crateToMove = stacks.get(from - 1).pop();
+                helperStack.push(crateToMove);
+            }
+
+            for (int i = 0; i < numberOfCrates; i++) {
+                Character crateToMove = helperStack.pop();
+                stacks.get(to - 1).push(crateToMove);
+            }
         }
     }
 
