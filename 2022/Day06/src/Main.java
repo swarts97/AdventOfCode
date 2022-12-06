@@ -42,11 +42,11 @@ public class Main {
     }
 
     private static String getLastNLetterString(char[] chars, int i, int n) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int j = 0; j < n; j++) {
-            result += chars[i - (n - 1 - j)];
+            result.append(chars[i - (n - 1 - j)]);
         }
-        return result;
+        return result.toString();
     }
 
     private static void processResult(int highestCaloriesCount) throws IOException {
