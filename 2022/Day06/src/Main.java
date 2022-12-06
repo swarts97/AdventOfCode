@@ -22,8 +22,8 @@ public class Main {
     private static int getMarkerPosition(String line) {
         char[] chars = line.toCharArray();
         for (int i = 3; i < chars.length; i++) {
-            String fourLetterString = getLastFourLetterString(chars, i);
-            if (allCharactersAreDifferent(fourLetterString)) {
+            String lastNLetterString = getLastNLetterString(chars, i, 4);
+            if (allCharactersAreDifferent(lastNLetterString)) {
                 return i + 1;
             }
         }
@@ -41,11 +41,12 @@ public class Main {
         return true;
     }
 
-    private static String getLastFourLetterString(char[] chars, int i) {
-        return "" + chars[i - 3] +
-                chars[i - 2] +
-                chars[i - 1] +
-                chars[i];
+    private static String getLastNLetterString(char[] chars, int i, int n) {
+        String result = "";
+        for (int j = 0; j < n; j++) {
+            result += chars[i - (n - 1 - j)];
+        }
+        return result;
     }
 
     private static void processResult(int highestCaloriesCount) throws IOException {
