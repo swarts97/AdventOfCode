@@ -1,8 +1,12 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalInt;
 
 public class Main {
     public static ElfDirectory currentDir = new ElfDirectory("/", null);
     public static ElfDirectory rootDir = currentDir;
+    public static List<ElfDirectory> possibleDirectoriesToDelete = new ArrayList<>();
 
     public static void main(String[] args) {
         try {
@@ -11,11 +15,22 @@ public class Main {
             reader.readLine(); //Skip 1st line
             initFileSystem(reader);
 
-            int limit = 100000;
-            int directoriesUnderLimitSizeSum = sumDirectorySizesUnderLimit(rootDir, limit);
+            //Part one
+            //int limit = 100000;
+            //int directoriesUnderLimitSizeSum = sumDirectorySizesUnderLimit(rootDir, limit);
+            int totalSpace = 70000000;
+            int rootSize = getDirectorySize(rootDir);
+            int availableSpace = totalSpace - rootSize;
+            int requiredTotalSpace = 30000000;
+            int requiredSpaceToDelete = requiredTotalSpace - availableSpace;
+            setPossibleDirectoriesToDelete(rootDir, requiredSpaceToDelete);
+            OptionalInt smallestDirectorySizeToDelete = possibleDirectoriesToDelete.stream()
+                    .map(Main::getDirectorySize)
+                    .mapToInt(i -> i)
+                    .min();
 
             reader.close();
-            processResult(directoriesUnderLimitSizeSum);
+            processResult(smallestDirectorySizeToDelete.getAsInt());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -127,6 +142,17 @@ public class Main {
             sum += getDirectorySize(dir);
         }
         return sum;
+    }
+
+    private static void setPossibleDirectoriesToDelete(ElfDirectory dir, int requiredSpace) {
+        if (!dir.getSubDirs().isEmpty()) {
+            for (ElfDirectory subDir : dir.getSubDirs()) {
+                setPossibleDirectoriesToDelete(subDir, requiredSpace);
+            }
+        }
+        if (getDirectorySize(dir) >= requiredSpace) {
+            possibleDirectoriesToDelete.add(dir);
+        }
     }
 
     private static void processResult(int highestCaloriesCount) throws IOException {
