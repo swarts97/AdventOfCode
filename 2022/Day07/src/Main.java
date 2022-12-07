@@ -6,7 +6,6 @@ public class Main {
     public static void main(String[] args) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("2022/Day07/input.txt"));
-            String line;
 
             reader.readLine(); //Skip 1st line
             initFileSystem(reader);
