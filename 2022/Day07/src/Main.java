@@ -2,6 +2,7 @@ import java.io.*;
 
 public class Main {
     public static ElfDirectory currentDir = new ElfDirectory("/", null);
+    public static ElfDirectory rootDir = currentDir;
 
     public static void main(String[] args) {
         try {
@@ -10,8 +11,11 @@ public class Main {
             reader.readLine(); //Skip 1st line
             initFileSystem(reader);
 
+            int limit = 100000;
+            int directoriesUnderLimitSizeSum = sumDirectorySizesUnderLimit(rootDir, limit);
+
             reader.close();
-            //processResult(result);
+            processResult(directoriesUnderLimitSizeSum);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,6 +101,32 @@ public class Main {
         String fileName = line.split(" ")[1];
         ElfFile file = new ElfFile(fileName, fileSize);
         currentDir.getFiles().add(file);
+    }
+
+    private static int getDirectorySize(ElfDirectory dir) {
+        int sum = 0;
+        if (!dir.getSubDirs().isEmpty()) {
+            for (ElfDirectory directory : dir.getSubDirs()) {
+                sum += getDirectorySize(directory);
+            }
+        }
+        for (ElfFile file : dir.getFiles()) {
+            sum += file.getSize();
+        }
+        return sum;
+    }
+
+    private static int sumDirectorySizesUnderLimit(ElfDirectory dir, int limit) {
+        int sum = 0;
+        if (!dir.getSubDirs().isEmpty()) {
+            for (ElfDirectory subDir : dir.getSubDirs()) {
+                sum += sumDirectorySizesUnderLimit(subDir, limit);
+            }
+        }
+        if (getDirectorySize(dir) <= limit) {
+            sum += getDirectorySize(dir);
+        }
+        return sum;
     }
 
     private static void processResult(int highestCaloriesCount) throws IOException {
