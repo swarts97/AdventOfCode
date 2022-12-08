@@ -13,29 +13,54 @@ public class Main {
             initForest(reader, forest);
             int forestWidth = forest.get(0).size();
             int forestHeight = forest.size();
-            int visibleTreeCounter = forestWidth * 2 + forestHeight * 2 - 4;
-            for (int i = 1; i < forestHeight - 1; i++) {
-                for (int j = 1; j < forestWidth - 1; j++) {
-                    int currentTreeHeight = getTreeHeight(forest, i, j);
-                    if (isTreeVisibleFromEdge(forest, i, j, Direction.UP, forestWidth, forestHeight, currentTreeHeight) ||
-                    isTreeVisibleFromEdge(forest, i, j, Direction.RIGHT, forestWidth, forestHeight, currentTreeHeight) ||
-                    isTreeVisibleFromEdge(forest, i, j, Direction.DOWN, forestWidth, forestHeight, currentTreeHeight) ||
-                    isTreeVisibleFromEdge(forest, i, j, Direction.LEFT, forestWidth, forestHeight, currentTreeHeight)) {
-                        visibleTreeCounter++;
-                    }
-                }
-            }
+            //Part one
+            //int visibleTreeCounter = getVisibleTreeCount(forest, forestWidth, forestHeight);
+            int highestScenicScore = getHighestScenicScore(forest, forestWidth, forestHeight);
 
             reader.close();
-            processResult(visibleTreeCounter);
+            processResult(highestScenicScore);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private static int getHighestScenicScore(List<List<Integer>> forest, int forestWidth, int forestHeight) {
+        int highestScenicScore = 0;
+        for (int i = 0; i < forestHeight; i++) {
+            for (int j = 0; j < forestWidth; j++) {
+                int currentTreeHeight = getTreeHeight(forest, i, j);
+                int currentScenicScore =
+                        getVisibleTreeCountsFromTreeToDirection(forest, i, j, Direction.UP, forestWidth, forestHeight, currentTreeHeight) *
+                        getVisibleTreeCountsFromTreeToDirection(forest, i, j, Direction.RIGHT, forestWidth, forestHeight, currentTreeHeight) *
+                        getVisibleTreeCountsFromTreeToDirection(forest, i, j, Direction.DOWN, forestWidth, forestHeight, currentTreeHeight) *
+                        getVisibleTreeCountsFromTreeToDirection(forest, i, j, Direction.LEFT, forestWidth, forestHeight, currentTreeHeight);
+                if (Math.abs(currentScenicScore) > highestScenicScore) {
+                    highestScenicScore = Math.abs(currentScenicScore);
+                }
+            }
+        }
+        return highestScenicScore;
+    }
+
+    private static int getVisibleTreeCount(List<List<Integer>> forest, int forestWidth, int forestHeight) {
+        int visibleTreeCounter = forestWidth * 2 + forestHeight * 2 - 4;
+        for (int i = 1; i < forestHeight - 1; i++) {
+            for (int j = 1; j < forestWidth - 1; j++) {
+                int currentTreeHeight = getTreeHeight(forest, i, j);
+                if (isTreeVisibleFromEdge(forest, i, j, Direction.UP, forestWidth, forestHeight, currentTreeHeight) ||
+                isTreeVisibleFromEdge(forest, i, j, Direction.RIGHT, forestWidth, forestHeight, currentTreeHeight) ||
+                isTreeVisibleFromEdge(forest, i, j, Direction.DOWN, forestWidth, forestHeight, currentTreeHeight) ||
+                isTreeVisibleFromEdge(forest, i, j, Direction.LEFT, forestWidth, forestHeight, currentTreeHeight)) {
+                    visibleTreeCounter++;
+                }
+            }
+        }
+        return visibleTreeCounter;
+    }
+
     private static boolean isTreeVisibleFromEdge(List<List<Integer>> forest, int i, int j, Direction dir, int forestWidth, int forestHeight, int currentTreeHeight) {
         int visibleTreesToDir;
-        visibleTreesToDir = getVisibleTreeCountsFromFreeToDirection(forest, i, j, dir, forestWidth, forestHeight, currentTreeHeight);
+        visibleTreesToDir = getVisibleTreeCountsFromTreeToDirection(forest, i, j, dir, forestWidth, forestHeight, currentTreeHeight);
         return visibleTreesToDir < 0;
     }
 
@@ -87,7 +112,7 @@ public class Main {
         return treesInDirection;
     }
 
-    private static int getVisibleTreeCountsFromFreeToDirection(List<List<Integer>> forest, int y, int x, Direction dir, int forestWidth, int forestHeight, int currentTreeHeight) {
+    private static int getVisibleTreeCountsFromTreeToDirection(List<List<Integer>> forest, int y, int x, Direction dir, int forestWidth, int forestHeight, int currentTreeHeight) {
         List<Integer> treesInDirection = getTreesInDirection(forest, y, x, dir, forestWidth, forestHeight);
         int counter = 0;
         for (Integer integer : treesInDirection) {
