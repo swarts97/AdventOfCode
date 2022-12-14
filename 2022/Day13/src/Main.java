@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
@@ -63,13 +64,7 @@ public class Main {
             }
             List<Character> firstElementOfA = getFirstElement(A);
             List<Character> firstElementOfB = getFirstElement(B);
-            /* if (firstElementOfA.size() == 0 && firstElementOfB.size() != 0) {
-                return true;
-            }
-            if (firstElementOfA.size() == 0 && firstElementOfB.size() != 0) {
-                return true;
-            } */
-            if (areElementsTheSameList(firstElementOfA, firstElementOfB)) {
+            if (areElementsTheSame(firstElementOfA, firstElementOfB)) {
                 List<Character> AWithoutFirstElementOfA = removeFirstOccurrenceFromList(A, firstElementOfA);
                 List<Character> BWithoutFirstElementOfB = removeFirstOccurrenceFromList(B, firstElementOfB);
                 return isInOrder(AWithoutFirstElementOfA, BWithoutFirstElementOfB);
@@ -87,19 +82,64 @@ public class Main {
         String AAsString = characterListToString(A).replaceAll("]", "").replaceAll("\\[", "");
         String BAsString = characterListToString(B).replaceAll("]", "").replaceAll("\\[", "");
         if (AAsString.isBlank() && BAsString.isBlank()) {
-            return AAsString.length() < BAsString.length();
+            return A.size() < B.size();
         }
-        return AAsString.compareTo(BAsString) < 0;
+        if (AAsString.length() == 0) {
+            return true;
+        }
+        if (BAsString.length() == 0) {
+            return false;
+        }
+        List<Integer> AAsListOfIntegers = Stream.of(AAsString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        List<Integer> BAsListOfIntegers = Stream.of(BAsString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        for (int i = 0; ; i++) {
+            if (AAsListOfIntegers.get(i) < BAsListOfIntegers.get(i)) {
+                return true;
+            }
+            if (AAsListOfIntegers.get(i) > BAsListOfIntegers.get(i)) {
+                return false;
+            }
+            if (i == AAsListOfIntegers.size() - 1) {
+                return true;
+            }
+            if (i == BAsListOfIntegers.size() - 1) {
+                return false;
+            }
+        }
+    }
+
+    private static boolean areElementsTheSame(List<Character> A, List<Character> B) {
+        String AAsString = characterListToString(A).replaceAll("]", "").replaceAll("\\[", "");
+        String BAsString = characterListToString(B).replaceAll("]", "").replaceAll("\\[", "");
+        if (AAsString.isBlank() && BAsString.isBlank()) {
+            return A.size() == B.size();
+        }
+        if (AAsString.length() != BAsString.length()) {
+            return false;
+        }
+
+        List<Integer> AAsListOfIntegers = Stream.of(AAsString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        List<Integer> BAsListOfIntegers = Stream.of(BAsString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        for (int i = 0; i < AAsListOfIntegers.size(); i++) {
+            if (!AAsListOfIntegers.get(i).equals(BAsListOfIntegers.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isSimpleList(List<Character> characterList) {
         return characterList.stream()
                 .filter(character -> character == '[')
                 .count() <= 1;
-    }
-
-    private static boolean areElementsTheSameList(List<Character> firstElementOfA, List<Character> firstElementOfB) {
-        return firstElementOfA.toString().equals(firstElementOfB.toString()) && firstElementOfA.size() != 1 && firstElementOfB.size() != 1;
     }
 
     private static List<Character> removeFirstOccurrenceFromList(List<Character> characterList, List<Character> charactersToRemove) {
