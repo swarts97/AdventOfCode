@@ -1,28 +1,23 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("2022/Day13/testinput.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("2022/Day13/input.txt"));
             List<String> lines = new ArrayList<>();
             initLines(reader, lines);
             int indexSumOfOrderedPairs = 0;
             for (int i = 0; i < lines.size(); i += 2) {
-                List<Character> lineOne = lines.get(i)
-                        .chars()
-                        .mapToObj(x -> (char) x)
-                        .collect(Collectors.toCollection(ArrayList::new));
-                List<Character> lineTwo = lines.get(i + 1)
-                        .chars()
-                        .mapToObj(x -> (char) x)
-                        .collect(Collectors.toCollection(ArrayList::new));
+                List<Character> lineOne = stringToCharacterList(lines.get(i));
+                List<Character> lineTwo = stringToCharacterList(lines.get(i + 1));
 
                 boolean isPairInOrder = isInOrder(lineOne, lineTwo);
                 if (isPairInOrder) {
-                    indexSumOfOrderedPairs += i + 1;
+                    indexSumOfOrderedPairs += i / 2 + 1;
                 }
             }
 
@@ -33,29 +28,87 @@ public class Main {
         }
     }
 
+    private static List<Character> stringToCharacterList(String line) {
+        return line
+                .chars()
+                .mapToObj(x -> (char) x)
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private static String characterListToString(List<Character> characterList) {
+        StringBuilder result = new StringBuilder();
+        for (Character character : characterList) {
+            result.append(character);
+        }
+        return result.toString();
+    }
+
     private static boolean isInOrder(List<Character> A, List<Character> B) {
-        List<Character> firstElementOfA = getFirstElement(A);
-        List<Character> firstElementOfB = getFirstElement(B);
-        //TODO egyenl? esetén menjen tovább
-        if (!isList(firstElementOfA) && !isList(firstElementOfB)) {
-             int firstIntElementOfA = Integer.parseInt(firstElementOfA.toString().replaceAll("[^0-9]", ""));
-             int firstIntElementOfB = Integer.parseInt(firstElementOfB.toString().replaceAll("[^0-9]", ""));
+        if (!isList(A) && !isList(B)) {
+             int firstIntElementOfA = Integer.parseInt(characterListToString(A));
+             int firstIntElementOfB = Integer.parseInt(characterListToString(B));
              return firstIntElementOfA < firstIntElementOfB;
         }
-        else if (isList(firstElementOfA) && !isList(firstElementOfB)) {
-            List<Character> firstElementOfBAsList = makeListFromElement(firstElementOfB);
-            return isInOrder(firstElementOfA, firstElementOfBAsList);
+        else if (isList(A) && !isList(B)) {
+            List<Character> firstElementOfBAsList = makeListFromElement(B);
+            return isInOrder(A, firstElementOfBAsList);
         }
-        else if (!isList(firstElementOfA) && isList(firstElementOfB)) {
-            List<Character> firstElementOfAAsList = makeListFromElement(firstElementOfA);
-            return isInOrder(firstElementOfAAsList, firstElementOfB);
+        else if (!isList(A) && isList(B)) {
+            List<Character> firstElementOfAAsList = makeListFromElement(A);
+            return isInOrder(firstElementOfAAsList, B);
         }
-        else if (isList(firstElementOfA) && isList(firstElementOfB)) {
-            return isInOrder(firstElementOfA, firstElementOfB);
+        else if (isList(A) && isList(B)) {
+            if (isSimpleList(A) && isSimpleList(B)) {
+                return areSimpleListsInOrder(A, B);
+            }
+            List<Character> firstElementOfA = getFirstElement(A);
+            List<Character> firstElementOfB = getFirstElement(B);
+            /* if (firstElementOfA.size() == 0 && firstElementOfB.size() != 0) {
+                return true;
+            }
+            if (firstElementOfA.size() == 0 && firstElementOfB.size() != 0) {
+                return true;
+            } */
+            if (areElementsTheSameList(firstElementOfA, firstElementOfB)) {
+                List<Character> AWithoutFirstElementOfA = removeFirstOccurrenceFromList(A, firstElementOfA);
+                List<Character> BWithoutFirstElementOfB = removeFirstOccurrenceFromList(B, firstElementOfB);
+                return isInOrder(AWithoutFirstElementOfA, BWithoutFirstElementOfB);
+            }
+            else {
+                return isInOrder(firstElementOfA, firstElementOfB);
+            }
         }
         else {
             throw new IllegalArgumentException("something terrible happened");
         }
+    }
+
+    private static boolean areSimpleListsInOrder(List<Character> A, List<Character> B) {
+        String AAsString = characterListToString(A).replaceAll("]", "").replaceAll("\\[", "");
+        String BAsString = characterListToString(B).replaceAll("]", "").replaceAll("\\[", "");
+        if (AAsString.isBlank() && BAsString.isBlank()) {
+            return AAsString.length() < BAsString.length();
+        }
+        return AAsString.compareTo(BAsString) < 0;
+    }
+
+    private static boolean isSimpleList(List<Character> characterList) {
+        return characterList.stream()
+                .filter(character -> character == '[')
+                .count() <= 1;
+    }
+
+    private static boolean areElementsTheSameList(List<Character> firstElementOfA, List<Character> firstElementOfB) {
+        return firstElementOfA.toString().equals(firstElementOfB.toString()) && firstElementOfA.size() != 1 && firstElementOfB.size() != 1;
+    }
+
+    private static List<Character> removeFirstOccurrenceFromList(List<Character> characterList, List<Character> charactersToRemove) {
+        String charactersAsString = characterListToString(characterList);
+        String charactersToRemoveAsString = characterListToString(charactersToRemove);
+        String result = charactersAsString.replaceFirst(Pattern.quote(charactersToRemoveAsString), "");
+        //Deleting unnecessary ',' characters
+        result = result.replaceAll(Pattern.quote("[,"), "[");
+        return stringToCharacterList(result);
     }
 
     private static List<Character> makeListFromElement(List<Character> B) {
@@ -69,6 +122,9 @@ public class Main {
     }
 
     private static List<Character> getFirstElement(List<Character> characters) {
+        if (characters.size() == 0) {
+            return characters;
+        }
         return isFirstElementList(characters) ?
                 getFirstListElement(characters) :
                 getFirstNonListElement(characters);
@@ -110,7 +166,7 @@ public class Main {
     }
 
     private static boolean isList(List<Character> characters) {
-        return characters.get(0) == '[';
+        return characters.size() == 0 || characters.get(0) == '[';
     }
 
     private static boolean isFirstElementList(List<Character> characters) {
