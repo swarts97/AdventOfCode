@@ -12,21 +12,26 @@ public class Main {
             List<String> lines = new ArrayList<>();
             initLines(reader, lines);
             int indexSumOfOrderedPairs = 0;
-            for (int i = 0; i < lines.size(); i += 2) {
-                List<Character> lineOne = stringToCharacterList(lines.get(i));
-                List<Character> lineTwo = stringToCharacterList(lines.get(i + 1));
-
-                boolean isPairInOrder = isInOrder(lineOne, lineTwo);
-                if (isPairInOrder) {
-                    indexSumOfOrderedPairs += i / 2 + 1;
-                }
-            }
+            indexSumOfOrderedPairs = calculateIndexSumOfOrderedPairs(lines, indexSumOfOrderedPairs);
 
             reader.close();
             processResult(indexSumOfOrderedPairs);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static int calculateIndexSumOfOrderedPairs(List<String> lines, int indexSumOfOrderedPairs) {
+        for (int i = 0; i < lines.size(); i += 2) {
+            List<Character> lineOne = stringToCharacterList(lines.get(i));
+            List<Character> lineTwo = stringToCharacterList(lines.get(i + 1));
+
+            boolean isPairInOrder = isInOrder(lineOne, lineTwo);
+            if (isPairInOrder) {
+                indexSumOfOrderedPairs += i / 2 + 1;
+            }
+        }
+        return indexSumOfOrderedPairs;
     }
 
     private static List<Character> stringToCharacterList(String line) {
