@@ -5,29 +5,33 @@ import java.util.List;
 
 public class Main {
     public static List<List<Character>> mtx = new ArrayList<>();
-    public static final int LIMIT = 300;
-    public static final int OFFSET = 400;
+    public static final int HEIGHT = 200;
+    public static final int WIDTH = 1000;
     public static final int FALLINGTIMEOUT = 250;
     public static final Character ROCK = '#';
     public static final Character AIR = '.';
     public static final Character SAND = 'o';
     public static Point sandCoord = new Point();
+    public static int highestYCoord = -1;
 
     public static void main(String[] args) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("2022/Day14/input.txt"));
             initMtx();
             parseInput(reader);
+            drawFloor(highestYCoord + 2);
             int reachedDepth = -1;
             int sandCounter = 0;
-            while (reachedDepth != FALLINGTIMEOUT) {
+            while (reachedDepth != 0) {
                 reachedDepth = startOneSand();
                 sandCounter++;
             }
             visualize();
 
             reader.close();
-            processResult(sandCounter - 1);
+            //Part 1
+            //processResult(sandCounter - 1);
+            processResult(sandCounter);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,9 +47,10 @@ public class Main {
             moveSand();
             depth++;
             sandCanMove = canSandMove();
-            if (depth == FALLINGTIMEOUT) {
-                return depth;
-            }
+            //Part 1
+            //if (depth == FALLINGTIMEOUT) {
+            //    return depth;
+            //}
         }
         return depth;
     }
@@ -87,6 +92,10 @@ public class Main {
             int x = Integer.parseInt(coordValues[0]);
             int y = Integer.parseInt(coordValues[1]);
             points.add(new Point(x, y));
+
+            if (y > highestYCoord) {
+                highestYCoord = y;
+            }
         }
         return points;
     }
@@ -120,17 +129,23 @@ public class Main {
     }
 
     private static void initMtx() {
-        for (int i = 0; i < LIMIT; i++) {
+        for (int i = 0; i < HEIGHT; i++) {
             List<Character> row = new ArrayList<>();
-            for (int j = 0; j < LIMIT; j++) {
+            for (int j = 0; j < WIDTH; j++) {
                 row.add(AIR);
             }
             mtx.add(row);
         }
     }
 
+    private static void drawFloor(int y) {
+        for (int i = 0; i < WIDTH; i++) {
+            setMtx(i, y, ROCK);
+        }
+    }
+
     private static Character getMtx(int x, int y) {
-        return mtx.get(y).get(x - OFFSET);
+        return mtx.get(y).get(x);
     }
     private static Character getBottom() {
         return getMtx(sandCoord.x, sandCoord.y + 1);
@@ -174,7 +189,7 @@ public class Main {
     }
 
     private static void setMtx(int x, int y, Character c) {
-        mtx.get(y).set(x - OFFSET, c);
+        mtx.get(y).set(x, c);
     }
 
     private static void visualize() {
@@ -191,19 +206,19 @@ public class Main {
 
     private static void printColumns() {
         System.out.print("    ");
-        for (int i = OFFSET; i < OFFSET + LIMIT; i++) {
+        for (int i = 0; i < WIDTH; i++) {
             System.out.print(i / 100);
         }
         System.out.println();
 
         System.out.print("    ");
-        for (int i = OFFSET; i < OFFSET + LIMIT; i++) {
+        for (int i = 0; i < WIDTH; i++) {
             System.out.print(i % 100 / 10);
         }
         System.out.println();
 
         System.out.print("    ");
-        for (int i = OFFSET; i < OFFSET + LIMIT; i++) {
+        for (int i = 0; i < WIDTH; i++) {
             System.out.print(i % 10);
         }
         System.out.println();
