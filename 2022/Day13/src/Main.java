@@ -11,17 +11,44 @@ public class Main {
             BufferedReader reader = new BufferedReader(new FileReader("2022/Day13/input.txt"));
             List<String> lines = new ArrayList<>();
             initLines(reader, lines);
-            int indexSumOfOrderedPairs = 0;
-            indexSumOfOrderedPairs = calculateIndexSumOfOrderedPairs(lines, indexSumOfOrderedPairs);
+            //Part 1
+            int indexSumOfOrderedPairs = calculateIndexSumOfOrderedPairs(lines);
+            //Part 2
+            int productOfAdditionalPackageIndexes = getProductOfAdditionalPackageIndexes(lines);
 
             reader.close();
-            processResult(indexSumOfOrderedPairs);
+            processResult(productOfAdditionalPackageIndexes);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static int calculateIndexSumOfOrderedPairs(List<String> lines, int indexSumOfOrderedPairs) {
+    private static int getProductOfAdditionalPackageIndexes(List<String> lines) {
+        String firstAdditionalPackage = "[[2]]";
+        String secondAdditionalPackage = "[[6]]";
+        List<String> linesWithFirstPackage = new ArrayList<>(lines);
+        linesWithFirstPackage.add(firstAdditionalPackage);
+        List<String> linesWithSecondPackage = new ArrayList<>(lines);
+        linesWithSecondPackage.add(secondAdditionalPackage);
+        int indexOfFirstAdditionalPacket = calculateIndexOfPackage(linesWithSecondPackage, firstAdditionalPackage);
+        int indexOfSecondAdditionalPacket = calculateIndexOfPackage(linesWithFirstPackage, secondAdditionalPackage);
+        return indexOfFirstAdditionalPacket * indexOfSecondAdditionalPacket;
+    }
+
+    private static int calculateIndexOfPackage(List<String> lines, String firstAdditionalPackage) {
+        int linesBeforeAdditionalPackage = 0;
+        for (String line : lines) {
+            List<Character> lineOne = stringToCharacterList(line);
+            List<Character> lineTwo = stringToCharacterList(firstAdditionalPackage);
+            if (isInOrder(lineOne, lineTwo)) {
+                linesBeforeAdditionalPackage++;
+            }
+        }
+        return linesBeforeAdditionalPackage + 2;
+    }
+
+    private static int calculateIndexSumOfOrderedPairs(List<String> lines) {
+        int indexSumOfOrderedPairs = 0;
         for (int i = 0; i < lines.size(); i += 2) {
             List<Character> lineOne = stringToCharacterList(lines.get(i));
             List<Character> lineTwo = stringToCharacterList(lines.get(i + 1));
