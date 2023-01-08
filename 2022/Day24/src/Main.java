@@ -1,10 +1,8 @@
 import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class Main {
     public static int HEIGHT = 6; //22
