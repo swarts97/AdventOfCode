@@ -51,10 +51,19 @@ public class Field {
     ///
 
     private boolean headingTooSlow(Point goal) {
+        int totalDistance = WIDTH - 3 + HEIGHT - 3 + 1;
         int distanceFromGoal = getDistanceFromGoal(goal);
-        int failureGap = 50;
-        int totalDistance = WIDTH + HEIGHT;
-        return minutesPassed + distanceFromGoal > totalDistance + failureGap;
+        int distanceFromStart = totalDistance - distanceFromGoal;
+        int drawbackFromIdeal = minutesPassed - distanceFromStart;
+        //Heuristics from testinput calculations
+        int failureGap = 100;
+        int maximumAllowedPathLength = totalDistance + failureGap;
+
+        int acceptableDrawbackMinutes = failureGap * minutesPassed / maximumAllowedPathLength + 5;
+        if (minutesPassed == 20) {
+            System.out.println(minutesPassed);
+        }
+        return drawbackFromIdeal > acceptableDrawbackMinutes;
     }
 
     private int getDistanceFromGoal(Point goal) {
