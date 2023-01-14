@@ -50,8 +50,21 @@ public class Field {
 
     ///
 
+    private boolean headingTooSlow(Point goal) {
+        int distanceFromGoal = getDistanceFromGoal(goal);
+        int failureGap = 50;
+        int totalDistance = WIDTH + HEIGHT;
+        return minutesPassed + distanceFromGoal > totalDistance + failureGap;
+    }
+
+    private int getDistanceFromGoal(Point goal) {
+        return goal.x - myPosition.x + goal.y - myPosition.y;
+    }
+
     public Field goToGoal(Point goal) {
-        if (minutesPassed > 200) {
+        if (headingTooSlow(goal)) {
+
+            System.out.println(getDistanceFromGoal(goal));
             return null;
         }
         if (isGoalReached || goal.equals(myPosition)) {
