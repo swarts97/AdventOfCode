@@ -2,8 +2,8 @@ import java.awt.Point;
 
 public class Blizzard {
 
-    private Character character;
-    private Direction direction;
+    private final Character character;
+    private final Direction direction;
     private Point position;
 
     public Blizzard(Character character, Direction direction, Point position) {
@@ -12,20 +12,18 @@ public class Blizzard {
         this.position = position;
     }
 
+    public Blizzard(Blizzard original) {
+        this.character = original.character;
+        this.direction = original.direction;
+        this.position  = (Point) original.position.clone();
+    }
+
     public Character getCharacter() {
         return character;
     }
 
-    public void setCharacter(Character character) {
-        this.character = character;
-    }
-
     public Direction getDirection() {
         return direction;
-    }
-
-    public void setDirection(Direction direction) {
-        this.direction = direction;
     }
 
     public Point getPosition() {
