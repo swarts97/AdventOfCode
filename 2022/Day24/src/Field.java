@@ -7,8 +7,8 @@ import java.util.*;
 import java.util.List;
 
 public class Field {
-    private int HEIGHT = 6; //22
-    private int WIDTH = 8; //152
+    private int HEIGHT = 22; //22
+    private int WIDTH = 152; //152
     private Character[][] mtx = new Character[HEIGHT][WIDTH];
     private List<Blizzard> blizzards = new ArrayList<>();
     private Point myPosition = new Point(1, 0);
@@ -51,7 +51,7 @@ public class Field {
     ///
 
     public Field goToGoal(Point goal) {
-        if (minutesPassed > 25) {
+        if (minutesPassed > 200) {
             return null;
         }
         if (isGoalReached || goal.equals(myPosition)) {
@@ -67,15 +67,12 @@ public class Field {
         Field resultForRight = null;
         Field resultForLeft = null;
         Field resultForNotMoving = null;
-        printMtx();
+        //printMtx();
         moveBlizzards();
 
         Point pointToDirectionDown = getNeighbourPoint(Direction.DOWN);
         if (isPointFree(pointToDirectionDown)) {
-            System.out.println("Minute " + minutesPassed + ", move down:");
-            if (minutesPassed == 17) {
-                System.out.println(minutesPassed);
-            }
+            //System.out.println("Minute " + minutesPassed + ", move down:");
             Field copyForDirectionDown = new Field(this);
             copyForDirectionDown.movePlayer(pointToDirectionDown);
             resultForDown = copyForDirectionDown.goToGoal(goal);
@@ -83,7 +80,7 @@ public class Field {
 
         Point pointToDirectionRight = getNeighbourPoint(Direction.RIGHT);
         if (isPointFree(pointToDirectionRight)) {
-            System.out.println("Minute " + minutesPassed + ", move right:");
+            //System.out.println("Minute " + minutesPassed + ", move right:");
             Field copyForDirectionRight = new Field(this);
             copyForDirectionRight.movePlayer(pointToDirectionRight);
             resultForRight = copyForDirectionRight.goToGoal(goal);
@@ -91,7 +88,7 @@ public class Field {
 
         Point pointToDirectionUp = getNeighbourPoint(Direction.UP);
         if (isPointFree(pointToDirectionUp)) {
-            System.out.println("Minute " + minutesPassed + ", move up:");
+            //System.out.println("Minute " + minutesPassed + ", move up:");
             Field copyForDirectionUp = new Field(this);
             copyForDirectionUp.movePlayer(pointToDirectionUp);
             resultForUp = copyForDirectionUp.goToGoal(goal);
@@ -99,24 +96,20 @@ public class Field {
 
         Point pointToDirectionLeft = getNeighbourPoint(Direction.LEFT);
         if (isPointFree(pointToDirectionLeft)) {
-            System.out.println("Minute " + minutesPassed + ", move left:");
+            //System.out.println("Minute " + minutesPassed + ", move left:");
             Field copyForDirectionLeft = new Field(this);
             copyForDirectionLeft.movePlayer(pointToDirectionLeft);
             resultForLeft = copyForDirectionLeft.goToGoal(goal);
         }
 
         if (isPointFree(myPosition)) {
-            System.out.println("Minute " + minutesPassed + ", wait:");
+            //System.out.println("Minute " + minutesPassed + ", wait:");
             Field copyForMyPosition = new Field(this);
             copyForMyPosition.movePlayer(myPosition);
             resultForNotMoving = copyForMyPosition.goToGoal(goal);
         }
 
         List<Field> results = Arrays.asList(resultForUp, resultForDown, resultForLeft, resultForRight, resultForNotMoving);
-        if (results.stream().allMatch(Objects::isNull)) {
-            System.out.println();
-            System.out.println();
-        }
         return results.stream()
                 .filter(Objects::nonNull)
                 .min(Comparator.comparingInt(Field::getMinutesPassed))
