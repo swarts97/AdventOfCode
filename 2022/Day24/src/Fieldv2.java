@@ -75,7 +75,7 @@ public class Fieldv2 {
     private Point getNeighbourPoint(Direction direction) {
         switch (direction) {
             case DOWN -> {
-                if (myPosition.y == 22 - 1) {
+                if (myPosition.y == 6 - 1) {
                     return null;
                 }
                 return new Point(myPosition.x, myPosition.y + 1);
@@ -93,7 +93,7 @@ public class Fieldv2 {
                 return new Point(myPosition.x - 1, myPosition.y);
             }
             case RIGHT -> {
-                if (myPosition.x == 152 - 1) {
+                if (myPosition.x == 8 - 1) {
                     return null;
                 }
                 return new Point(myPosition.x + 1, myPosition.y);
@@ -117,8 +117,8 @@ public class Fieldv2 {
     }
 
     public void printMtx(Character[][] mtx) {
-        for (int j = 0; j < 22; j++) {
-            for (int i = 0; i < 152; i++) {
+        for (int j = 0; j < 6; j++) {
+            for (int i = 0; i < 8; i++) {
                 System.out.print(mtx[j][i]);
             }
             System.out.println();
