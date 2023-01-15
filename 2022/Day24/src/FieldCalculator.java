@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.*;
 
 public class FieldCalculator {
-    private final int HEIGHT = 22; //22
-    private final int WIDTH = 152; //152
+    private final int HEIGHT = 6; //22
+    private final int WIDTH = 8; //152
 
     private final Character[][][] mtx = new Character[400][HEIGHT][WIDTH];
     private final List<Blizzard> blizzards = new ArrayList<>();
@@ -56,7 +56,8 @@ public class FieldCalculator {
         }
         //Bottom line
         for (int i = 0; i < WIDTH; i++) {
-            Character characterToSet = i == WIDTH - 2 ? '.' : '#';
+            //Character characterToSet = i == WIDTH - 2 ? '.' : '#';
+            Character characterToSet = '#';
             setMtx(time, i, HEIGHT - 1, characterToSet);
         }
         //Left line
