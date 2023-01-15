@@ -8,20 +8,22 @@ public class PathFinder {
     private final int MAXTRY; //400
     private final int FAILURE_GAP; //400
     private final int FAILURE_OFFSET; //20
+    private final Point start;
     private final Point goal;
 
-    public PathFinder(int HEIGHT, int WIDTH, int MAXTRY, int FAILURE_GAP, int FAILURE_OFFSET, Point goal) {
+    public PathFinder(int HEIGHT, int WIDTH, int MAXTRY, int FAILURE_GAP, int FAILURE_OFFSET, Point start, Point goal) {
         this.HEIGHT = HEIGHT;
         this.WIDTH = WIDTH;
         this.MAXTRY = MAXTRY;
         this.FAILURE_GAP = FAILURE_GAP;
         this.FAILURE_OFFSET = FAILURE_OFFSET;
+        this.start = start;
         this.goal = goal;
     }
 
     public int getResult(Character[][][] mtx, int timePassed) {
         Set<Fieldv2> lastMinuteFields = new HashSet<>();
-        Fieldv2 initialField = new Fieldv2();
+        Fieldv2 initialField = new Fieldv2(start);
         lastMinuteFields.add(initialField);
 
         for (int time = timePassed + 1; time < timePassed + MAXTRY; time++) {
@@ -42,6 +44,16 @@ public class PathFinder {
                 System.out.println("================================");
                 System.out.println("Solution found: " + result);
                 System.out.println("================================");
+                /*
+                System.out.println(result - 2);
+                printMtx(mtx, result - 2);
+
+                System.out.println(result - 1);
+                printMtx(mtx, result - 1);
+
+                System.out.println(result);
+                printMtx(mtx, result);
+                */
                 return result;
             }
         }
@@ -63,5 +75,15 @@ public class PathFinder {
 
     private int getDistanceFromGoal(Point goal, Point myPosition) {
         return goal.x - myPosition.x + goal.y - myPosition.y;
+    }
+
+    private void printMtx(Character[][][] mtx, int time) {
+        for (int j = 0; j < HEIGHT; j++) {
+            for (int i = 0; i < WIDTH; i++) {
+                System.out.print(mtx[time][j][i]);
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 }

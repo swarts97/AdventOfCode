@@ -57,7 +57,8 @@ public class FieldCalculator {
     private void clearMtx(int time) {
         //Top line
         for (int i = 0; i < WIDTH; i++) {
-            Character characterToSet = i == 1 ? '.' : '#';
+            //Character characterToSet = i == 1 ? '.' : '#';
+            Character characterToSet = '#';
             setMtx(time, i, 0, characterToSet);
         }
         //Bottom line
