@@ -5,15 +5,21 @@ import java.util.List;
 public class Fieldv2 {
 
     private Point myPosition;
+    private final int HEIGHT;
+    private final int WIDTH;
     private int minutesPassed = 0;
 
     public Fieldv2(Fieldv2 original) {
         this.myPosition = (Point) original.myPosition.clone();
         this.minutesPassed = original.minutesPassed + 1;
+        this.HEIGHT = original.HEIGHT;
+        this.WIDTH = original.WIDTH;
     }
 
-    public Fieldv2(Point start) {
+    public Fieldv2(Point start, int width, int height) {
         myPosition = start;
+        WIDTH = width;
+        HEIGHT = height;
     }
 
     public int getMinutesPassed() {
@@ -77,7 +83,7 @@ public class Fieldv2 {
     private Point getNeighbourPoint(Direction direction) {
         switch (direction) {
             case DOWN -> {
-                if (myPosition.y == 6 - 1) {
+                if (myPosition.y == HEIGHT - 1) {
                     return null;
                 }
                 return new Point(myPosition.x, myPosition.y + 1);
@@ -95,7 +101,7 @@ public class Fieldv2 {
                 return new Point(myPosition.x - 1, myPosition.y);
             }
             case RIGHT -> {
-                if (myPosition.x == 8 - 1) {
+                if (myPosition.x == WIDTH - 1) {
                     return null;
                 }
                 return new Point(myPosition.x + 1, myPosition.y);
@@ -119,8 +125,8 @@ public class Fieldv2 {
     }
 
     public void printMtx(Character[][] mtx) {
-        for (int j = 0; j < 6; j++) {
-            for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < HEIGHT; j++) {
+            for (int i = 0; i < WIDTH; i++) {
                 System.out.print(mtx[j][i]);
             }
             System.out.println();

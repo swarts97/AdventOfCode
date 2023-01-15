@@ -7,14 +7,16 @@ import java.util.*;
 public class FieldCalculator {
     private final int HEIGHT; //22
     private final int WIDTH; //152
+    private final int MTX_COUNT; //1200
 
     private final Character[][][] mtx;
     private final List<Blizzard> blizzards = new ArrayList<>();
 
-    public FieldCalculator(int width, int height) {
+    public FieldCalculator(int width, int height, int mtxCount) {
         WIDTH = width;
         HEIGHT = height;
-        mtx = new Character[400][HEIGHT][WIDTH];
+        MTX_COUNT = mtxCount;
+        mtx = new Character[MTX_COUNT][HEIGHT][WIDTH];
     }
 
     public Character[][][] getMtx() {
@@ -40,7 +42,7 @@ public class FieldCalculator {
             }
         }
         reader.close();
-        for(int i = 1; i < 400; i++) {
+        for (int i = 1; i < MTX_COUNT; i++) {
             moveBlizzardsAndUpdateMtxFields(i);
         }
     }
@@ -58,13 +60,11 @@ public class FieldCalculator {
         //Top line
         for (int i = 0; i < WIDTH; i++) {
             Character characterToSet = i == 1 ? '.' : '#';
-            //Character characterToSet = '#';
             setMtx(time, i, 0, characterToSet);
         }
         //Bottom line
         for (int i = 0; i < WIDTH; i++) {
             Character characterToSet = i == WIDTH - 2 ? '.' : '#';
-            //Character characterToSet = '#';
             setMtx(time, i, HEIGHT - 1, characterToSet);
         }
         //Left line

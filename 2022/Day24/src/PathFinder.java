@@ -23,7 +23,7 @@ public class PathFinder {
 
     public int getResult(Character[][][] mtx, int timePassed) {
         Set<Fieldv2> lastMinuteFields = new HashSet<>();
-        Fieldv2 initialField = new Fieldv2(start);
+        Fieldv2 initialField = new Fieldv2(start, WIDTH, HEIGHT);
         lastMinuteFields.add(initialField);
 
         for (int time = timePassed + 1; time < timePassed + MAXTRY; time++) {
@@ -33,27 +33,17 @@ public class PathFinder {
             }
             lastMinuteFields = nextIterationFields;
             lastMinuteFields.removeIf(lastMinuteField -> headingTooSlow(goal, lastMinuteField));
-            for (Fieldv2 lmf : lastMinuteFields) {
-                System.out.println("DistFromGoal: " + getDistanceFromGoal(goal, lmf.getMyPosition()) + " minutesPassed: " + lmf.getMinutesPassed());
-            }
+
             if (lastMinuteFields.stream().anyMatch(fieldv2 -> goal.equals(fieldv2.getMyPosition()))) {
                 Fieldv2 finalField = lastMinuteFields.stream()
                         .filter(fieldv2 -> goal.equals(fieldv2.getMyPosition()))
-                        .findFirst().get();
+                        .findFirst()
+                        .get();
+
                 int result = finalField.getMinutesPassed();
                 System.out.println("================================");
                 System.out.println("Solution found: " + result);
                 System.out.println("================================");
-                /*
-                System.out.println(result - 2);
-                printMtx(mtx, result - 2);
-
-                System.out.println(result - 1);
-                printMtx(mtx, result - 1);
-
-                System.out.println(result);
-                printMtx(mtx, result);
-                */
                 return result;
             }
         }
@@ -65,7 +55,6 @@ public class PathFinder {
         int distanceFromGoal = getDistanceFromGoal(goal, field.getMyPosition());
         int distanceFromStart = totalDistance - distanceFromGoal;
         int drawbackFromIdeal = field.getMinutesPassed() - distanceFromStart;
-        //Heuristics from testinput calculations
         int failureGap = FAILURE_GAP;
         int maximumAllowedPathLength = totalDistance + failureGap;
 
