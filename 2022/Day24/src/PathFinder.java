@@ -40,7 +40,7 @@ public class PathFinder {
                 Fieldv2 finalField = lastMinuteFields.stream()
                         .filter(fieldv2 -> goal.equals(fieldv2.getMyPosition()))
                         .findFirst().get();
-                int result = finalField.getMinutesPassed() + 1;
+                int result = finalField.getMinutesPassed();
                 System.out.println("================================");
                 System.out.println("Solution found: " + result);
                 System.out.println("================================");

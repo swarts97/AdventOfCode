@@ -57,14 +57,14 @@ public class FieldCalculator {
     private void clearMtx(int time) {
         //Top line
         for (int i = 0; i < WIDTH; i++) {
-            //Character characterToSet = i == 1 ? '.' : '#';
-            Character characterToSet = '#';
+            Character characterToSet = i == 1 ? '.' : '#';
+            //Character characterToSet = '#';
             setMtx(time, i, 0, characterToSet);
         }
         //Bottom line
         for (int i = 0; i < WIDTH; i++) {
-            //Character characterToSet = i == WIDTH - 2 ? '.' : '#';
-            Character characterToSet = '#';
+            Character characterToSet = i == WIDTH - 2 ? '.' : '#';
+            //Character characterToSet = '#';
             setMtx(time, i, HEIGHT - 1, characterToSet);
         }
         //Left line
