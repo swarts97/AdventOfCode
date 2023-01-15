@@ -1,16 +1,15 @@
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
 public class Field {
+
     private int HEIGHT = 22; //22
     private int WIDTH = 152; //152
-    private Character[][] mtx = new Character[HEIGHT][WIDTH];
-    private List<Blizzard> blizzards = new ArrayList<>();
+
+    private Character[][][] mtx = new Character[400][HEIGHT][WIDTH];
     private Point myPosition = new Point(1, 0);
     private int minutesPassed = 0;
 
@@ -21,15 +20,15 @@ public class Field {
         this.WIDTH = original.WIDTH;
         this.mtx = SerializationUtils.clone(original.mtx);
         this.myPosition = (Point) original.myPosition.clone();
-        this.blizzards = new ArrayList<>();
-        for (Blizzard blizzard : original.getBlizzards()) {
-            this.blizzards.add(new Blizzard(blizzard));
-        }
         this.minutesPassed = original.minutesPassed;
         this.isGoalReached = original.isGoalReached;
     }
 
     public Field() {
+    }
+
+    public void setMtx(Character[][][] mtx) {
+        this.mtx = mtx;
     }
 
     public int getHEIGHT() {
@@ -38,10 +37,6 @@ public class Field {
 
     public int getWIDTH() {
         return WIDTH;
-    }
-
-    public List<Blizzard> getBlizzards() {
-        return blizzards;
     }
 
     public int getMinutesPassed() {
@@ -56,10 +51,10 @@ public class Field {
         int distanceFromStart = totalDistance - distanceFromGoal;
         int drawbackFromIdeal = minutesPassed - distanceFromStart;
         //Heuristics from testinput calculations
-        int failureGap = 100;
+        int failureGap = 200;
         int maximumAllowedPathLength = totalDistance + failureGap;
 
-        int acceptableDrawbackMinutes = failureGap * minutesPassed / maximumAllowedPathLength + 5;
+        int acceptableDrawbackMinutes = failureGap * minutesPassed / maximumAllowedPathLength + 20;
         return drawbackFromIdeal > acceptableDrawbackMinutes;
     }
 
@@ -70,12 +65,14 @@ public class Field {
     public Field goToGoal(Point goal) {
         if (headingTooSlow(goal)) {
 
-            System.out.println(getDistanceFromGoal(goal));
+            System.out.print(getDistanceFromGoal(goal));
+            System.out.print(" - ");
+            System.out.println(minutesPassed);
             return null;
         }
         if (isGoalReached || goal.equals(myPosition)) {
             isGoalReached = true;
-            printMtx();
+            printMtx(minutesPassed);
             System.out.println("================================");
             System.out.println("Solution found: " + minutesPassed);
             System.out.println("================================");
@@ -86,45 +83,45 @@ public class Field {
         Field resultForRight = null;
         Field resultForLeft = null;
         Field resultForNotMoving = null;
-        //printMtx();
-        moveBlizzards();
+        //printMtx(minutesPassed);
+        minutesPassed++;
 
         Point pointToDirectionDown = getNeighbourPoint(Direction.DOWN);
-        if (isPointFree(pointToDirectionDown)) {
+        if (isPointFree(minutesPassed, pointToDirectionDown)) {
             //System.out.println("Minute " + minutesPassed + ", move down:");
             Field copyForDirectionDown = new Field(this);
-            copyForDirectionDown.movePlayer(pointToDirectionDown);
+            copyForDirectionDown.movePlayer(minutesPassed, pointToDirectionDown);
             resultForDown = copyForDirectionDown.goToGoal(goal);
         }
 
         Point pointToDirectionRight = getNeighbourPoint(Direction.RIGHT);
-        if (isPointFree(pointToDirectionRight)) {
+        if (isPointFree(minutesPassed, pointToDirectionRight)) {
             //System.out.println("Minute " + minutesPassed + ", move right:");
             Field copyForDirectionRight = new Field(this);
-            copyForDirectionRight.movePlayer(pointToDirectionRight);
+            copyForDirectionRight.movePlayer(minutesPassed, pointToDirectionRight);
             resultForRight = copyForDirectionRight.goToGoal(goal);
         }
 
         Point pointToDirectionUp = getNeighbourPoint(Direction.UP);
-        if (isPointFree(pointToDirectionUp)) {
+        if (isPointFree(minutesPassed, pointToDirectionUp)) {
             //System.out.println("Minute " + minutesPassed + ", move up:");
             Field copyForDirectionUp = new Field(this);
-            copyForDirectionUp.movePlayer(pointToDirectionUp);
+            copyForDirectionUp.movePlayer(minutesPassed, pointToDirectionUp);
             resultForUp = copyForDirectionUp.goToGoal(goal);
         }
 
         Point pointToDirectionLeft = getNeighbourPoint(Direction.LEFT);
-        if (isPointFree(pointToDirectionLeft)) {
+        if (isPointFree(minutesPassed, pointToDirectionLeft)) {
             //System.out.println("Minute " + minutesPassed + ", move left:");
             Field copyForDirectionLeft = new Field(this);
-            copyForDirectionLeft.movePlayer(pointToDirectionLeft);
+            copyForDirectionLeft.movePlayer(minutesPassed, pointToDirectionLeft);
             resultForLeft = copyForDirectionLeft.goToGoal(goal);
         }
 
-        if (isPointFree(myPosition)) {
+        if (isPointFree(minutesPassed, myPosition)) {
             //System.out.println("Minute " + minutesPassed + ", wait:");
             Field copyForMyPosition = new Field(this);
-            copyForMyPosition.movePlayer(myPosition);
+            copyForMyPosition.movePlayer(minutesPassed, myPosition);
             resultForNotMoving = copyForMyPosition.goToGoal(goal);
         }
 
@@ -165,103 +162,27 @@ public class Field {
         return null;
     }
 
-    private boolean isPointFree(Point point) {
-        return point != null && getMtx(point) == '.';
+    private boolean isPointFree(int time, Point point) {
+        return point != null && getMtx(time, point) == '.';
     }
 
-    private void movePlayer(Point point) {
+    private void movePlayer(int time, Point point) {
         myPosition.x = point.x;
         myPosition.y = point.y;
-        mtx[point.y][point.x] = 'E';
+        mtx[time][point.y][point.x] = 'E';
     }
 
-    private void moveBlizzards() {
-        clearMtx();
-        for (Blizzard blizzard : blizzards) {
-            blizzard.moveOne();
-            handleTeleportationIfNeeded(blizzard);
-            updateField(blizzard.getPosition(), blizzard.getCharacter());
-        }
-        minutesPassed++;
+    private Character getMtx(int time, Point position) {
+        return mtx[time][position.y][position.x];
     }
 
-    private void clearMtx() {
-        for (int j = 1; j < HEIGHT - 1; j++) {
-            for (int i = 1; i < WIDTH - 1; i++) {
-                setMtx(i, j, '.');
-            }
-        }
-    }
-
-    private void handleTeleportationIfNeeded(Blizzard blizzard) {
-        if (getMtx(blizzard.getPosition()) == '#') {
-            switch (blizzard.getDirection()) {
-                case UP -> blizzard.setPosition(new Point(blizzard.x(), HEIGHT - 2));
-                case DOWN -> blizzard.setPosition(new Point(blizzard.x(), 1));
-                case RIGHT -> blizzard.setPosition(new Point(1, blizzard.y()));
-                case LEFT -> blizzard.setPosition(new Point(WIDTH - 2, blizzard.y()));
-            }
-        }
-    }
-
-    private void updateField(Point position, Character character) {
-        Character currentFieldValue = getMtx(position);
-        if (currentFieldValue == '.') {
-            setMtx(position, character);
-        }
-        else if (currentFieldValue == '^' || currentFieldValue == 'v' || currentFieldValue == '>' || currentFieldValue == '<') {
-            setMtx(position, '2');
-        }
-        else if (Character.isDigit(currentFieldValue)) {
-            int valueOfNumber = Character.getNumericValue(currentFieldValue);
-            setMtx(position, Character.forDigit(++valueOfNumber, 10));
-        }
-    }
-
-//    private Character getMtx(int x, int y) {
-//        return mtx[y][x];
-//    }
-
-    private void setMtx(int x, int y, Character character) {
-        mtx[y][x] = character;
-    }
-
-    private void setMtx(Point position, Character character) {
-        mtx[position.y][position.x] = character;
-    }
-
-    private Character getMtx(Point position) {
-        return mtx[position.y][position.x];
-    }
-
-    public void printMtx() {
+    public void printMtx(int time) {
         for (int j = 0; j < HEIGHT; j++) {
             for (int i = 0; i < WIDTH; i++) {
-                System.out.print(mtx[j][i]);
+                System.out.print(mtx[time][j][i]);
             }
             System.out.println();
         }
         System.out.println();
-    }
-
-    public void initFromInput(BufferedReader reader) throws IOException {
-        String line;
-        for (int j = 0; j < HEIGHT; j++) {
-            line = reader.readLine();
-            if (!line.isBlank()) {
-                char[] charactersInLine = line.toCharArray();
-                for (int i = 0; i < WIDTH; i++) {
-                    Character currectCharacter = charactersInLine[i];
-                    mtx[j][i] = currectCharacter;
-                    switch (currectCharacter) {
-                        case '^' -> blizzards.add(new Blizzard(currectCharacter, Direction.UP, new Point(i, j)));
-                        case 'v' -> blizzards.add(new Blizzard(currectCharacter, Direction.DOWN, new Point(i, j)));
-                        case '>' -> blizzards.add(new Blizzard(currectCharacter, Direction.RIGHT, new Point(i, j)));
-                        case '<' -> blizzards.add(new Blizzard(currectCharacter, Direction.LEFT, new Point(i, j)));
-                    }
-                }
-            }
-        }
-        reader.close();
     }
 }
