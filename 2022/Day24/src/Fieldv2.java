@@ -1,7 +1,6 @@
 import java.awt.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 public class Fieldv2 {
 
@@ -26,7 +25,7 @@ public class Fieldv2 {
 
     ///
 
-    public List<Fieldv2> getNextIterationFields(Character[][] mtx) {
+    public Set<Fieldv2> getNextIterationFields(Character[][] mtx) {
         Fieldv2 copyForDirectionRight = null;
         Fieldv2 copyForDirectionDown = null;
         Fieldv2 copyForMyPosition = null;
@@ -67,15 +66,17 @@ public class Fieldv2 {
             copyForDirectionLeft.movePlayer(pointToDirectionLeft, mtx);
         }
         List<Fieldv2> results = Arrays.asList(copyForDirectionRight, copyForDirectionDown, copyForMyPosition, copyForDirectionUp, copyForDirectionLeft);
-        return results.stream()
+        List<Fieldv2> resultsListWithoutNulls =
+                results.stream()
                 .filter(Objects::nonNull)
                 .toList();
+        return new HashSet<>(resultsListWithoutNulls);
     }
 
     private Point getNeighbourPoint(Direction direction) {
         switch (direction) {
             case DOWN -> {
-                if (myPosition.y == 6 - 1) {
+                if (myPosition.y == 22 - 1) {
                     return null;
                 }
                 return new Point(myPosition.x, myPosition.y + 1);
@@ -93,7 +94,7 @@ public class Fieldv2 {
                 return new Point(myPosition.x - 1, myPosition.y);
             }
             case RIGHT -> {
-                if (myPosition.x == 8 - 1) {
+                if (myPosition.x == 152 - 1) {
                     return null;
                 }
                 return new Point(myPosition.x + 1, myPosition.y);
@@ -117,12 +118,25 @@ public class Fieldv2 {
     }
 
     public void printMtx(Character[][] mtx) {
-        for (int j = 0; j < 6; j++) {
-            for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 22; j++) {
+            for (int i = 0; i < 152; i++) {
                 System.out.print(mtx[j][i]);
             }
             System.out.println();
         }
         System.out.println();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Fieldv2 fieldv2 = (Fieldv2) o;
+        return minutesPassed == fieldv2.minutesPassed && myPosition.equals(fieldv2.myPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(myPosition, minutesPassed);
     }
 }

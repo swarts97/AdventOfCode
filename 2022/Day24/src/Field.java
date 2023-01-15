@@ -54,7 +54,7 @@ public class Field {
         int failureGap = 200;
         int maximumAllowedPathLength = totalDistance + failureGap;
 
-        int acceptableDrawbackMinutes = failureGap * minutesPassed / maximumAllowedPathLength + 20;
+        int acceptableDrawbackMinutes = failureGap * minutesPassed / maximumAllowedPathLength + 5;
         return drawbackFromIdeal > acceptableDrawbackMinutes;
     }
 

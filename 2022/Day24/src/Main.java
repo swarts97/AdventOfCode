@@ -1,31 +1,30 @@
 import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Main {
-    static final int WIDTH = 8; //152
-    static final int HEIGHT = 6; // 22
-    static final int MAXTRY = 20;
+    static final int WIDTH = 152; //152
+    static final int HEIGHT = 22; // 22
+    static final int MAXTRY = 400;
     public static void main(String[] args) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("2022/Day24/testinput.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("2022/Day24/input.txt"));
 
             FieldCalculator fieldCalculator = new FieldCalculator(WIDTH, HEIGHT);
             fieldCalculator.initMtx(reader);
             Character[][][] mtx = fieldCalculator.getMtx();
 
             Point goal = new Point(WIDTH - 2, HEIGHT - 2);
-            List<Fieldv2> lastMinuteFields = new ArrayList<>();
+            Set<Fieldv2> lastMinuteFields = new HashSet<>();
             Fieldv2 field = new Fieldv2();
             lastMinuteFields.add(field);
             int result = 0;
 
             for (int time = 1; time < MAXTRY; time++) {
-                List<Fieldv2> nextIterationFields = new ArrayList<>();
-                for (int i = 0; i < lastMinuteFields.size(); i++) {
-                    Fieldv2 currentField = lastMinuteFields.get(i);
-                    nextIterationFields.addAll(currentField.getNextIterationFields(mtx[time]));
+                Set<Fieldv2> nextIterationFields = new HashSet<>();
+                for (Fieldv2 lastMinuteField : lastMinuteFields) {
+                    nextIterationFields.addAll(lastMinuteField.getNextIterationFields(mtx[time]));
                 }
                 lastMinuteFields = nextIterationFields;
                 lastMinuteFields.removeIf(lastMinuteField -> headingTooSlow(goal, lastMinuteField));
@@ -55,10 +54,10 @@ public class Main {
         int distanceFromStart = totalDistance - distanceFromGoal;
         int drawbackFromIdeal = field.getMinutesPassed() - distanceFromStart;
         //Heuristics from testinput calculations
-        int failureGap = 10;
+        int failureGap = 200;
         int maximumAllowedPathLength = totalDistance + failureGap;
 
-        int acceptableDrawbackMinutes = failureGap * field.getMinutesPassed() / maximumAllowedPathLength + 5;
+        int acceptableDrawbackMinutes = failureGap * field.getMinutesPassed() / maximumAllowedPathLength + 30;
         return drawbackFromIdeal > acceptableDrawbackMinutes;
     }
 
