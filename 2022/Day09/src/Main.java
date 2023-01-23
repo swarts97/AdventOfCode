@@ -7,16 +7,19 @@ public class Main {
     public static List<AbstractMap.SimpleEntry<Direction, Integer>> commands = new ArrayList<>();
     public static Set<Point> visitedPoints = new HashSet<>();
     public static List<Point> knots = new ArrayList<>();
-    public static int sizeOfKnots = 2;
-    public static Point startingPoint = new Point(0, 4);
-    public static char[][] mtx = new char[5][6];
+    public static int sizeOfKnots = 10;
+    public static int WIDTH = 1000;
+    public static int HEIGHT = 1000;
+    public static Point startingPoint = new Point(500, 500);
+    public static char[][] mtx = new char[HEIGHT][WIDTH];
 
     public static void main(String[] args) {
         try {
             parseInput();
             initKnots(sizeOfKnots);
+            //visualizeMtx(26, 21);
             executeCommands();
-            //visualizeVisitedPoints(6, 5);
+            visualizeVisitedPoints(WIDTH, HEIGHT);
             processResult(visitedPoints.size());
         } catch (IOException e) {
             e.printStackTrace();
@@ -31,9 +34,9 @@ public class Main {
                 moveOne(knots.get(0), direction);
                 for (int i = 1; i < knots.size(); i++) {
                     moveKnotIfNeeded(knots.get(i), knots.get(i - 1));
+                    visitedPoints.add(new Point(knots.get(sizeOfKnots - 1)));
                 }
-                //visualizeMtx(6, 5);
-                visitedPoints.add(new Point(knots.get(sizeOfKnots - 1)));
+                //visualizeMtx(26, 21);
             }
         }
     }
@@ -41,7 +44,11 @@ public class Main {
     private static void moveKnotIfNeeded(Point currentKnot, Point knotInFrontOfCurrentKnot) {
         int horizontalDifference = knotInFrontOfCurrentKnot.x - currentKnot.x;
         int verticalDifference = knotInFrontOfCurrentKnot.y - currentKnot.y;
-        if (Math.abs(horizontalDifference) == 2) {
+        if (Math.abs(horizontalDifference) == 2 && Math.abs(verticalDifference) == 2) {
+            currentKnot.x += horizontalDifference / 2;
+            currentKnot.y += verticalDifference / 2;
+        }
+        else if (Math.abs(horizontalDifference) == 2) {
             currentKnot.x += horizontalDifference / 2;
             currentKnot.y = knotInFrontOfCurrentKnot.y;
         }
@@ -53,8 +60,8 @@ public class Main {
 
     public static void moveOne(Point point, Direction direction) {
         switch (direction) {
-            case UP -> point.y--;
-            case DOWN -> point.y++;
+            case UP -> point.y++;
+            case DOWN -> point.y--;
             case RIGHT -> point.x++;
             case LEFT -> point.x--;
         }
